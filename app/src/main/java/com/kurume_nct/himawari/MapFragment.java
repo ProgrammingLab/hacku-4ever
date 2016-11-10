@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
     private final int REQUEST_PERMISSION = 1000;
     private GoogleMap map;
+    private Location currentPos;
 
     public MapFragment() {
         // Required empty public constructor
@@ -91,9 +92,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         try {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
                 Location myLocate = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (myLocate != null) {
+                    currentPos = myLocate;
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
                     LatLng myPos = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(myPos, 15));
                 }
@@ -107,7 +109,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onLocationChanged(Location location) {
-        locationActivity();
+        currentPos = location;
     }
 
     @Override
