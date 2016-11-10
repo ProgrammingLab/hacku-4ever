@@ -18,11 +18,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
     private final int REQUEST_PERMISSION = 1000;
     private GoogleMap map;
     private Location currentPos;
+    private Marker destMarker = null;
 
     public MapFragment() {
         // Required empty public constructor
@@ -39,6 +42,28 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         checkPermission();
         map.setMyLocationEnabled(true);
+
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (destMarker != null) {
+                    destMarker.setPosition(latLng);
+                } else {
+                    destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
+                }
+            }
+        });
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker.equals(destMarker)) {
+                    // markerがクリックされたときの処理
+                    Log.d("HOGE", "Marker Clicked");
+                }
+                return true;
+            }
+        });
     }
 
     private void checkPermission() {
