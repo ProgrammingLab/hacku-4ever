@@ -160,7 +160,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             // markerがクリックされたときの処理
             Log.d("HOGE", "Marker Clicked");
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT));
+            transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
             transaction.addToBackStack(null);
             transaction.commit();
         }
