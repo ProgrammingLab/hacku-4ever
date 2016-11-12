@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">himawari</string>
+
+    <string name="price_label">値段</string>
+    <string name="duration_label">時間</string>
+    <string name="form_submit_button">探す</string>
 </resources>

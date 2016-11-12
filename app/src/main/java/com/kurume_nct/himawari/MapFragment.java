@@ -1,7 +1,9 @@
 package com.kurume_nct.himawari;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +12,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,8 +24,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
+    private final int REQUEST_INPUT = 10;
     private GoogleMap map;
     private Location currentPos;
     private Marker destMarker = null;
@@ -43,27 +47,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         checkPermission();
         map.setMyLocationEnabled(true);
 
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                if (destMarker != null) {
-                    destMarker.setPosition(latLng);
-                } else {
-                    destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
-                }
-            }
-        });
-
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if (marker.equals(destMarker)) {
-                    // markerがクリックされたときの処理
-                    Log.d("HOGE", "Marker Clicked");
-                }
-                return true;
-            }
-        });
+        map.setOnMapLongClickListener(this);
+        map.setOnMarkerClickListener(this);
     }
 
     private void checkPermission() {
@@ -158,5 +143,40 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onProviderDisabled(String s) {
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        if (destMarker != null) {
+            destMarker.setPosition(latLng);
+        } else {
+            destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (marker.equals(destMarker)) {
+            // markerがクリックされたときの処理
+            Log.d("HOGE", "Marker Clicked");
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+        return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_INPUT:
+                if (resultCode != Activity.RESULT_OK) break;
+                Log.d("HOGE", data.getStringExtra(InputFormFragment.DURATION_KEY));
+                Log.d("HOGE", data.getStringExtra(InputFormFragment.PRICE_KEY));
+                break;
+            default:
+                break;
+        }
     }
 }
