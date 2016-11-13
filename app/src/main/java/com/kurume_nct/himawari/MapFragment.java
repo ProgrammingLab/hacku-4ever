@@ -172,8 +172,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         switch (requestCode) {
             case REQUEST_INPUT:
                 if (resultCode != Activity.RESULT_OK) break;
-                Log.d("HOGE", data.getStringExtra(InputFormFragment.DURATION_KEY));
-                Log.d("HOGE", data.getStringExtra(InputFormFragment.PRICE_KEY));
                 break;
             default:
                 break;

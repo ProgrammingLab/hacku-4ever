@@ -8,12 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class InputListViewAdapter extends ArrayAdapter<InputFormFragment.InputFormItem> {
     private LayoutInflater inflater;
-    private InputFormFragment.InputFormItem[] items;
     private int resource;
+    private ArrayList<InputFormFragment.InputFormItem> items;
 
-    public InputListViewAdapter(Context context, int res, InputFormFragment.InputFormItem[] objects) {
+    public InputListViewAdapter(Context context, int res, ArrayList<InputFormFragment.InputFormItem> objects) {
         super(context, res, objects);
         inflater = LayoutInflater.from(context);
         items = objects;
@@ -29,7 +31,7 @@ public class InputListViewAdapter extends ArrayAdapter<InputFormFragment.InputFo
         TextView label = (TextView) convertView.findViewById(R.id.input_label);
         TextView val = (TextView) convertView.findViewById(R.id.input_value);
 
-        InputFormFragment.InputFormItem item = items[position];
+        InputFormFragment.InputFormItem item = items.get(position);
 
         label.setText(item.getLabel());
         val.setText(item.getValue());
