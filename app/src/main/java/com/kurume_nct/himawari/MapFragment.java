@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +18,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +27,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
@@ -30,6 +42,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private GoogleMap map;
     private Location currentPos;
     private Marker destMarker = null;
+    private Polyline line;
 
     public MapFragment() {
         // Required empty public constructor
@@ -152,6 +165,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         } else {
             destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
         }
+
+        //drawRouteの確認用
+        drawRoute(new ArrayList<LatLng>());
     }
 
     @Override
@@ -177,6 +193,69 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 break;
             default:
                 break;
+        }
+    }
+
+    public void drawRoute(List<LatLng> waypoints) {
+        if (destMarker == null) {
+            Log.e("fuga", "drawRoute");
+            return;
+        }
+
+        String output = "json";
+
+        String parameters = "";
+        parameters += "origin=" + currentPos.getLatitude() + "," + currentPos.getLongitude();
+        parameters += "&destination=" + destMarker.getPosition().latitude + "," + destMarker.getPosition().longitude;
+
+        if (!waypoints.isEmpty()) parameters += "&waypoints=ptimize:true";
+        for (LatLng waypoint : waypoints) {
+            parameters += "|" + waypoint.latitude + "," + waypoint.longitude;
+        }
+
+        parameters += "&mode=walking";
+
+        //ここにAPIキーを追加してください
+        parameters += "&key=";
+
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+        DownLoadTask task = new DownLoadTask();
+        task.execute(url);
+    }
+
+    private class DownLoadTask extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... url) {
+            String overview_polyline= "";
+            ObjectMapper mapper = new ObjectMapper();
+
+            JsonNode rootNode = null;
+            try {
+                Log.d("test",url[0]);
+                rootNode = mapper.readTree(new URL(url[0]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").asText();
+
+            return overview_polyline;
+        }
+        @Override
+        protected void onPostExecute(String overview_polyline){
+            super.onPostExecute(overview_polyline);
+
+            if(line != null) line.remove();
+            List<LatLng> routes = PolyUtil.decode(overview_polyline + "");
+
+            line = map.addPolyline(new PolylineOptions()
+                    .addAll(routes)
+                    .width(5)
+                    .color(Color.RED));
+
+            return;
         }
     }
 }
