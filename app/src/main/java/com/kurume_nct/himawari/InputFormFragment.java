@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -53,10 +54,20 @@ public class InputFormFragment extends Fragment implements View.OnClickListener 
         LatLng markerPos = args.getParcelable(POS_KEY);
         Log.d("HOGE", markerPos.toString());
 
+        if (v instanceof ListView) {
+            ListView listView = (ListView) v;
+            InputFormItem[] items = new InputFormItem[2];
+            items[0] = new InputFormItem(getString(R.string.price_label), getString(R.string.price_default));
+            items[1] = new InputFormItem(getString(R.string.duration_label), getString(R.string.duration_default));
+            listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
+        }
+
+        /*
         durationPicker = (TimePicker) v.findViewById(R.id.duration);
         priceText = (EditText) v.findViewById(R.id.price);
         submitButton = (Button) v.findViewById(R.id.form_submit_button);
         submitButton.setOnClickListener(this);
+        */
         return v;
     }
 
@@ -77,6 +88,23 @@ public class InputFormFragment extends Fragment implements View.OnClickListener 
         if (getTargetFragment() != null) {
             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, result);
             getFragmentManager().popBackStack();
+        }
+    }
+
+    public class InputFormItem {
+        private String label;
+        private String val;
+        public InputFormItem(String label, String val) {
+            this.label = label;
+            this.val = val;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+        public String getValue() {
+            return this.val;
         }
     }
 }
