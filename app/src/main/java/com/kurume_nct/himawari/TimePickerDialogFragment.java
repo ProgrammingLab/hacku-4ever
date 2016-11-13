@@ -17,15 +17,6 @@ public class TimePickerDialogFragment extends BaseDialogFragment implements Time
         return dialog;
     }
 
-    public OnValueSetListener getListener() {
-        Fragment fragment = getTargetFragment();
-        if (fragment instanceof OnValueSetListener) {
-            return (OnValueSetListener) fragment;
-        } else {
-            return null;
-        }
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
