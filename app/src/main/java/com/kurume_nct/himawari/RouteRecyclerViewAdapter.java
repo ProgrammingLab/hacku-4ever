@@ -11,11 +11,6 @@ import com.kurume_nct.himawari.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RouteRecyclerViewAdapter.ViewHolder> {
 
     private final List<DummyItem> mValues;
@@ -28,8 +23,7 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RouteRecycler
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_route, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_route, parent, false);
         return new ViewHolder(view);
     }
 
@@ -43,8 +37,6 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RouteRecycler
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
             }
