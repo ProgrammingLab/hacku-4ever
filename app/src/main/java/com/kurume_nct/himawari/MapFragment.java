@@ -27,6 +27,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -41,6 +42,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private GoogleMap map;
     private Location currentPos;
     private Marker destMarker = null;
+    private Polyline line;
 
     public MapFragment() {
         // Required empty public constructor
@@ -237,8 +239,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 e.printStackTrace();
             }
 
-            overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").toString();
-            overview_polyline = overview_polyline.substring(1,overview_polyline.length()-1);
+            overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").asText();
 
             return overview_polyline;
         }
@@ -246,9 +247,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         protected void onPostExecute(String overview_polyline){
             super.onPostExecute(overview_polyline);
 
+            if(line != null) line.remove();
             List<LatLng> routes = PolyUtil.decode(overview_polyline + "");
 
-            map.addPolyline(new PolylineOptions()
+            line = map.addPolyline(new PolylineOptions()
                     .addAll(routes)
                     .width(5)
                     .color(Color.RED));
