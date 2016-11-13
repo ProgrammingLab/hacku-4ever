@@ -91,7 +91,7 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
             listView = (ListView) v;
             listView.setOnItemClickListener(this);
             items = new ArrayList<InputFormItem>();
-            items.add(new InputFormItem(getString(R.string.price_label), Integer.toString(price), TimePickerDialogFragment.newInstance(this, 0)));
+            items.add(new InputFormItem(getString(R.string.price_label), Integer.toString(price), PriceDialogFragment.newInstance(this, 0, getString(R.string.price_label))));
             items.add(new InputFormItem(getString(R.string.duration_label), Integer.toString(hour) + ":" + Integer.toString(minute), TimePickerDialogFragment.newInstance(this, 1)));
             listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
         }
@@ -115,6 +115,9 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
 
     @Override
     public void onValueSet(int requstCode, String val) {
+        if (requstCode == 0) {
+            items.get(0).setValue(val);
+        }
         if (requstCode == 1) {
             items.get(1).setValue(val);
         }
