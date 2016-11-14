@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,14 +88,15 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         LatLng markerPos = args.getParcelable(POS_KEY);
         Log.d("HOGE", markerPos.toString());
 
-        if (v instanceof ListView) {
-            listView = (ListView) v;
-            listView.setOnItemClickListener(this);
-            items = new ArrayList<InputFormItem>();
-            items.add(new InputFormItem(getString(R.string.price_label), Integer.toString(price), PriceDialogFragment.newInstance(this, 0, getString(R.string.price_label))));
-            items.add(new InputFormItem(getString(R.string.duration_label), Integer.toString(hour) + ":" + Integer.toString(minute), TimePickerDialogFragment.newInstance(this, 1)));
-            listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
-        }
+        Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.form_title));
+
+        listView = (ListView) v.findViewById(R.id.list);
+        listView.setOnItemClickListener(this);
+        items = new ArrayList<InputFormItem>();
+        items.add(new InputFormItem(getString(R.string.price_label), Integer.toString(price), PriceDialogFragment.newInstance(this, 0, getString(R.string.price_label))));
+        items.add(new InputFormItem(getString(R.string.duration_label), Integer.toString(hour) + ":" + Integer.toString(minute), TimePickerDialogFragment.newInstance(this, 1)));
+        listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
         return v;
     }
 
