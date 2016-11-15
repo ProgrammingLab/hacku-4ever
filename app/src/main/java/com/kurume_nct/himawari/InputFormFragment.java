@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +30,7 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     private int price;
     private int hour;
     private int minute;
+    private LatLng markerPos;
 
     private ArrayList<InputFormItem> items;
     private ListView listView;
@@ -61,6 +61,10 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        importFromBundle(savedInstanceState);
+    }
+
+    private void importFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(PRICE_KEY)) {
                 price = savedInstanceState.getInt(PRICE_KEY);
@@ -71,6 +75,9 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
             if (savedInstanceState.containsKey(DURATION_MINUTE)) {
                 minute = savedInstanceState.getInt(DURATION_MINUTE);
             }
+            if (savedInstanceState.containsKey(POS_KEY)) {
+                markerPos = savedInstanceState.getParcelable(POS_KEY);
+            }
         }
     }
 
@@ -80,6 +87,7 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         outState.putInt(PRICE_KEY, price);
         outState.putInt(DURATION_HOUR, hour);
         outState.putInt(DURATION_MINUTE, minute);
+        outState.putParcelable(POS_KEY, markerPos);
     }
 
     @Override
@@ -87,8 +95,7 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         View v = inflater.inflate(R.layout.fragment_input_form, container, false);
 
         Bundle args = getArguments();
-        LatLng markerPos = args.getParcelable(POS_KEY);
-        Log.d("HOGE", markerPos.toString());
+        importFromBundle(args);
 
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.form_title));
@@ -143,8 +150,12 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     public void onValueSet(int requstCode, String val) {
         if (requstCode == 0) {
             items.get(0).setValue(val);
+            price = Integer.parseInt(val);
         }
         if (requstCode == 1) {
+            String[] tmp = val.split(":");
+            hour = Integer.parseInt(tmp[0]);
+            minute = Integer.parseInt(tmp[1]);
             items.get(1).setValue(val);
         }
         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
