@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 
 
 public class InputFormFragment extends Fragment implements ListView.OnItemClickListener, BaseDialogFragment.OnValueSetListener {
+    public static  final String IS_SUBMIT = "submit_";
     public static final String PRICE_KEY = "price_";
     public static final String DURATION_HOUR = "duration_hour";
     public static final String DURATION_MINUTE = "duration_minute";
@@ -90,6 +92,28 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
 
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.form_title));
+        toolbar.setNavigationIcon(R.drawable.arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent result = new Intent();
+                result.putExtra(IS_SUBMIT, 0);
+                returnValue(result);
+            }
+        });
+        toolbar.inflateMenu(R.menu.submit);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent result = new Intent();
+                result.putExtra(IS_SUBMIT, 1);
+                result.putExtra(PRICE_KEY, price);
+                result.putExtra(DURATION_HOUR, hour);
+                result.putExtra(DURATION_MINUTE, minute);
+                returnValue(result);
+                return true;
+            }
+        });
 
         listView = (ListView) v.findViewById(R.id.list);
         listView.setOnItemClickListener(this);

@@ -172,6 +172,16 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         switch (requestCode) {
             case REQUEST_INPUT:
                 if (resultCode != Activity.RESULT_OK) break;
+                Bundle args = data.getExtras();
+                int is_submit = args.getInt(InputFormFragment.IS_SUBMIT);
+                if (is_submit == 1) {
+                    int price = args.getInt(InputFormFragment.PRICE_KEY);
+                    int hour = args.getInt(InputFormFragment.DURATION_HOUR);
+                    int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
+                    Log.d("HOGE", "price " + String.valueOf(price));
+                    Log.d("HOGE", "hour " + String.valueOf(hour));
+                    Log.d("HOGE", "minute " + String.valueOf(minute));
+                }
                 break;
             default:
                 break;
