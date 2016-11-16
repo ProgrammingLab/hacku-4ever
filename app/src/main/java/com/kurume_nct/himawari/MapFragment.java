@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
@@ -152,6 +154,21 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         } else {
             destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
         }
+        Log.d("chigichan24","start");
+        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
+        sc.getParsedData(new DownloadTask.CallBackTask(){
+            @Override
+            public void CallBack(List<StoreData> result) {
+                super.CallBack(result);
+                Log.d("HOGE",String.valueOf(result.size()));
+                for(StoreData tmp : result){
+                    Log.d("HOGE",tmp.getStoreName());
+                }
+                // resultにはdoInBackgroundの返り値が入ります。
+                // ここからAsyncTask処理後の処理を記述します。
+                Log.i("AsyncTaskCallback", "非同期処理が終了しました。");
+            }
+        });
     }
 
     @Override

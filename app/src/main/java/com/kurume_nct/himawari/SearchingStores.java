@@ -4,7 +4,6 @@ package com.kurume_nct.himawari;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -12,14 +11,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SearchingStores{
@@ -30,7 +28,6 @@ public class SearchingStores{
             "book_store","bowling_alley","cafe","church", "department_store",
             "library","movie_theater","museum","park", "restaurant",
             "shopping_mall","spa","zoo"};
-
 
     public SearchingStores(){
 
@@ -55,16 +52,15 @@ public class SearchingStores{
         this.latLng = new LatLng(location.getLatitude(),location.getLongitude());
     }
 
-    public void getParsedData(){
-
+    public void getParsedData(DownloadTask.CallBackTask callback){
         try {
             URL url = this.setURL();
             DownloadTask task = new DownloadTask();
+            task.setOnCallBack(callback);
             task.execute(url);
         }catch (NullPointerException e){
             Log.e("location",e.getMessage());
         }
-        return ;
     }
 
     @Nullable
@@ -75,11 +71,8 @@ public class SearchingStores{
         urlBuilder.append("&language=ja");
         urlBuilder.append("&types=" + this.createType());
         urlBuilder.append("&key="+API_KEY);
-        Log.d("HOGE", urlBuilder.toString());
         try {
             URI uri = new URI(urlBuilder.toString());
-            Log.d("chigichan24",urlBuilder.toString());
-            Log.d("HOGE", uri.toString());
             return uri.toURL();
         }
         catch (URISyntaxException e){
@@ -100,24 +93,4 @@ public class SearchingStores{
         places = places.substring(0,places.length()-3);
         return places;
     }
-
-
-    private class DownloadTask extends AsyncTask<URL,Void,String>{
-        @Override
-        protected String doInBackground(URL... url) {
-            String overview_polyline= "";
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = null;
-            try {
-                rootNode = mapper.readTree(url[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Log.d("chigichan24",rootNode.toString());
-            //overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").toString();
-            //overview_polyline = overview_polyline.substring(1,overview_polyline.length()-1);
-            return "";
-        }
-    }
 }
-
