@@ -3,21 +3,15 @@ package com.kurume_nct.himawari;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class SearchingStores{

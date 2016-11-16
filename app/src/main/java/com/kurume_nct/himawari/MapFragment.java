@@ -154,21 +154,14 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         } else {
             destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
         }
-        Log.d("chigichan24","start");
-        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
-        sc.getParsedData(new DownloadTask.CallBackTask(){
-            @Override
-            public void CallBack(List<StoreData> result) {
-                super.CallBack(result);
-                Log.d("HOGE",String.valueOf(result.size()));
-                for(StoreData tmp : result){
-                    Log.d("HOGE",tmp.getStoreName());
-                }
-                // resultにはdoInBackgroundの返り値が入ります。
-                // ここからAsyncTask処理後の処理を記述します。
-                Log.i("AsyncTaskCallback", "非同期処理が終了しました。");
-            }
-        });
+//        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
+//        sc.getParsedData(new DownloadTask.CallBackTask(){
+//            @Override
+//            public void CallBack(List<StoreData> result) {
+//                super.CallBack(result);
+//                // ここからAsyncTask処理後の処理を記述します。
+//            }
+//        });
     }
 
     @Override
