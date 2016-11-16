@@ -24,8 +24,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
@@ -115,7 +113,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 Toast.makeText(getContext(), "gps位置検索をonにしてください", Toast.LENGTH_SHORT).show();
             }
         } catch (SecurityException e) {
-            Log.e("HOGE", e.getMessage());
+            Log.e("gps", e.getMessage());
         }
     }
 
@@ -128,13 +126,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public void onStatusChanged(String provider, int status, Bundle bundle) {
         switch (status) {
             case LocationProvider.AVAILABLE:
-                Log.d("DEBUG", "LocationProvider.AVAILABLE");
                 break;
             case LocationProvider.OUT_OF_SERVICE:
-                Log.d("DEBUG", "LocationProvider.OUT_OF_SERVICE");
                 break;
             case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                Log.d("DEBUG", "LocationProvider.TEMPORARILY_UNAVAILABLE");
                 break;
         }
     }
@@ -168,7 +163,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public boolean onMarkerClick(Marker marker) {
         if (marker.equals(destMarker)) {
             // markerがクリックされたときの処理
-            Log.d("HOGE", "Marker Clicked");
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
             transaction.addToBackStack(null);
@@ -182,8 +176,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         switch (requestCode) {
             case REQUEST_INPUT:
                 if (resultCode != Activity.RESULT_OK) break;
-                Log.d("HOGE", data.getStringExtra(InputFormFragment.DURATION_KEY));
-                Log.d("HOGE", data.getStringExtra(InputFormFragment.PRICE_KEY));
+                Bundle args = data.getExtras();
+                int is_submit = args.getInt(InputFormFragment.IS_SUBMIT);
+                if (is_submit == 1) {
+                    int price = args.getInt(InputFormFragment.PRICE_KEY);
+                    int hour = args.getInt(InputFormFragment.DURATION_HOUR);
+                    int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
+                }
                 break;
             default:
                 break;
