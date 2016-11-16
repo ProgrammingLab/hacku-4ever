@@ -1,5 +1,6 @@
 package com.kurume_nct.himawari;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -23,11 +24,13 @@ import java.util.List;
 public class LineDrawing {
     private GoogleMap map;
     private Polyline line;
+    private String API_KEY;
 
-    public LineDrawing(GoogleMap map){
+    public LineDrawing(Context context, GoogleMap map){
         this.map = map;
+        this.API_KEY = context.getString(R.string.google_maps_key);
     }
-    public void drawRoute(LatLng curr,LatLng dest,List<LatLng> waypoints,String api_key) {
+    public void drawRoute(LatLng curr,LatLng dest,List<LatLng> waypoints) {
         if (dest == null) {
             Log.e("fuga", "drawRoute");
             return;
@@ -47,7 +50,7 @@ public class LineDrawing {
         parameters += "&mode=walking";
 
         //ここにAPIキーを追加してください
-        parameters += "&key="+api_key;
+        parameters += "&key="+API_KEY;
 
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
 

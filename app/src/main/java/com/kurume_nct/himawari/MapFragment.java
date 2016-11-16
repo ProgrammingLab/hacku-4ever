@@ -54,7 +54,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         map.setOnMapLongClickListener(this);
         map.setOnMarkerClickListener(this);
 
-        lineDrawing = new LineDrawing(map);
+        lineDrawing = new LineDrawing(getContext(), map);
     }
 
     private void checkPermission() {
@@ -166,7 +166,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
         LatLng dest = destMarker.getPosition();
-        lineDrawing.drawRoute(curr,dest,new ArrayList<LatLng>(),getString(R.string.google_maps_key));
+        lineDrawing.drawRoute(curr,dest,new ArrayList<LatLng>());
     }
 
     @Override
