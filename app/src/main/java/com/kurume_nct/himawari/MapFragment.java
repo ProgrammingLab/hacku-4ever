@@ -24,12 +24,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
     private GoogleMap map;
     private Location currentPos;
     private Marker destMarker = null;
+
+    LineDrawing lineDrawing;
 
     public MapFragment() {
         // Required empty public constructor
@@ -49,6 +53,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         map.setOnMapLongClickListener(this);
         map.setOnMarkerClickListener(this);
+
+        lineDrawing = new LineDrawing(map);
     }
 
     private void checkPermission() {
@@ -149,6 +155,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         } else {
             destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
         }
+<<<<<<< HEAD
 //        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
 //        sc.getParsedData(new DownloadTask.CallBackTask(){
 //            @Override
@@ -157,6 +164,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 //                // ここからAsyncTask処理後の処理を記述します。
 //            }
 //        });
+=======
+
+
+        LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
+        LatLng dest = destMarker.getPosition();
+        lineDrawing.drawRoute(curr,dest,new ArrayList<LatLng>(),getString(R.string.google_maps_key));
+>>>>>>> origin/master
     }
 
     @Override
