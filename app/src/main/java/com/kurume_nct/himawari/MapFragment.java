@@ -23,12 +23,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.kurume_nct.himawari.dummy.DummyContent;
 
 import java.util.ArrayList;
 
-public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, RouteFragment.OnListFragmentInteractionListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
+    private final int REQUEST_ROUTE = 100;
     private GoogleMap map;
     private Location currentPos;
     private Marker destMarker = null;
@@ -174,7 +176,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         if (marker.equals(destMarker)) {
             // markerがクリックされたときの処理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
+            //transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
+            transaction.replace(R.id.activity_main, RouteFragment.newInstance(this, REQUEST_ROUTE));
             transaction.addToBackStack(null);
             transaction.commit();
         }
@@ -197,5 +200,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+        Log.d("HOGE", item.toString());
     }
 }
