@@ -18,6 +18,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 
+import com.google.android.gms.games.social.Social;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,14 +34,15 @@ import com.google.maps.android.PolyUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnPolylineClickListener{
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
     private GoogleMap map;
     private Polyline line;
     private Location currentPos;
     private Marker destMarker = null;
-
+    List<WayTime> timeResults;
+    List<StoreData> storeResults;
     LineDrawing lineDrawing;
 
     public MapFragment() {
@@ -61,6 +63,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         map.setOnMapLongClickListener(this);
         map.setOnMarkerClickListener(this);
+        map.setOnPolylineClickListener(this);
 
         lineDrawing = new LineDrawing(getContext(), map);
     }
@@ -201,15 +204,30 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 super.CallBack(result);
                 LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
                 LatLng dest = destMarker.getPosition();
+
                 lineDrawing.drawRoute(curr,dest,result,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
                     @Override
                     public void CallBack(List<WayTime> timeresult) {
                         super.CallBack(timeresult);
                         map.addCircle(new CircleOptions().center(result.get(0).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
                         map.addCircle(new CircleOptions().center(result.get(1).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
+
+                        storeResults = result;
+                        timeResults = timeresult;
                     }
                 });
             }
         });
+    }
+
+    @Override
+    public void onPolylineClick(Polyline polyline) {
+        //Polylineがクリックされた時の処理
+        for(WayTime wayTime : timeResults)
+            Log.d("test","wayTime = "+ wayTime.getDistance() + " " + wayTime.getTime());
+
+        for(int i = 0;i < 2;i++)
+            if(!storeResults.isEmpty())
+                Log.d("test","store datum = " + storeResults.get(i).getStoreName());
     }
 }
