@@ -203,11 +203,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 LatLng dest = destMarker.getPosition();
                 lineDrawing.drawRoute(curr,dest,result,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
                     @Override
-                    public void CallBack(List<Integer> timeresult) {
+                    public void CallBack(List<WayTime> timeresult) {
                         super.CallBack(timeresult);
-                        for(Integer tmp : timeresult){
-                            Log.d("HOGE",tmp.toString());
-                        }
                         map.addCircle(new CircleOptions().center(result.get(0).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
                         map.addCircle(new CircleOptions().center(result.get(1).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
                     }
