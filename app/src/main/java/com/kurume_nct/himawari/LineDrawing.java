@@ -2,19 +2,16 @@ package com.kurume_nct.himawari;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.fitness.request.DebugInfoRequest;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,47 +19,80 @@ import java.util.List;
  */
 
 public class LineDrawing {
-    private GoogleMap map;
-    private Polyline line;
     private String API_KEY;
+    private Boolean isIn;
+    GoogleMap map;
+    Polyline line;
 
     public LineDrawing(Context context, GoogleMap map){
         this.map = map;
         this.API_KEY = context.getString(R.string.google_maps_key);
     }
-    public void drawRoute(LatLng curr,LatLng dest,final List<StoreData> waypoints,GoogleMap map,DownloadWayTask.CallBackTask callback) {
+    public void drawRoute(LatLng curr,LatLng dest,final List<StoreData> waypoints,final int price,final int hour,final int minute,
+                          GoogleMap map,DownloadWayTask.CallBackTask callback) {
         if (dest == null) {
             Log.e("fuga", "drawRoute");
             return;
         }
 
         this.map = map;
+        int query = 10;
+        while(query != 0) {
+            query--;
+            String output = "json";
+            String parameters = "";
+            parameters += "origin=" + curr.latitude + "," + curr.longitude;
+            parameters += "&destination=" + dest.latitude + "," + dest.longitude;
 
-        String output = "json";
-
-        String parameters = "";
-        parameters += "origin=" + curr.latitude + "," + curr.longitude;
-        parameters += "&destination=" + dest.latitude + "," + dest.longitude;
-
-        if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true" + "%7C";
-        int cnt = 0;
-        for (StoreData waypoint : waypoints) {
-            if(cnt == 2){
-                break;
+            if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true" + "%7C";
+            int cnt = 0;
+            int stayedTime = 0;
+            int tryPrice = 0;
+            Collections.shuffle(waypoints);
+            boolean isEnd = false;
+            for (StoreData waypoint : waypoints) {
+                if (cnt == 2) {
+                    isEnd = true;
+                    break;
+                }
+                if(tryPrice+waypoint.getPrice() < price){
+                    tryPrice += waypoint.getPrice();
+                }
+                else{
+                    break;
+                }
+                parameters += waypoint.getLatLng().latitude + "," + waypoint.getLatLng().longitude + "%7C";
+                stayedTime += waypoint.getStayedTime();
+                ++cnt;
             }
-            parameters += waypoint.getLatLng().latitude + "," + waypoint.getLatLng().longitude + "%7C";
-            ++cnt;
+            if(!isEnd)continue;
+
+            parameters = parameters.substring(0, parameters.length() - 3);
+            parameters += "&mode=walking";
+            Calendar calendar = Calendar.getInstance();
+            long unixTime = calendar.getTimeInMillis();
+            int h = calendar.get(Calendar.HOUR_OF_DAY);
+            int m = calendar.get(Calendar.MINUTE);
+            int p = 0;
+            if(m > minute){
+                p = (hour - h -1)*3600 + (60 - (m - minute))*60;
+            }
+            else{
+                p = (hour - h)*3600 + (minute - m)*60;
+            }
+            if(p-stayedTime < 0){
+                continue;
+            }
+            parameters += "&arrival_time=" + String.valueOf(unixTime + 1000*(p - stayedTime));
+
+            //ここにAPIキーを追加してください
+            parameters += "&key=" + API_KEY;
+
+            String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+            DownloadWayTask task = new DownloadWayTask(map, line);
+            task.setOnCallBack(callback);
+            task.execute(url);
+            break;
         }
-        parameters = parameters.substring(0,parameters.length()-3);
-        parameters += "&mode=walking";
-
-        //ここにAPIキーを追加してください
-        parameters += "&key="+API_KEY;
-
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-        Log.d("HOGE",url);
-        DownloadWayTask task = new DownloadWayTask(map,line);
-        task.setOnCallBack(callback);
-        task.execute(url);
     }
 }

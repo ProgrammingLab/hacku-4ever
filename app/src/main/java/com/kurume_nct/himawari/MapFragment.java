@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -184,7 +185,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                     int price = args.getInt(InputFormFragment.PRICE_KEY);
                     int hour = args.getInt(InputFormFragment.DURATION_HOUR);
                     int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
-                    run();
+                    run(price,hour,minute);
                 }
                 break;
             default:
@@ -192,21 +193,23 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         }
     }
 
-    private void run(){
+    private void run(final int price,final int hour,final int minute){
         SearchingStores sc = new SearchingStores(this.getContext(),destMarker.getPosition());
         sc.getParsedData(new DownloadTask.CallBackTask(){
             @Override
-            public void CallBack(List<StoreData> result) {
+            public void CallBack(final List<StoreData> result) {
                 super.CallBack(result);
                 LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
                 LatLng dest = destMarker.getPosition();
-                lineDrawing.drawRoute(curr,dest,result,map,new DownloadWayTask.CallBackTask(){
+                lineDrawing.drawRoute(curr,dest,result,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
                     @Override
-                    public void CallBack(List<Integer> result) {
-                        super.CallBack(result);
-                        for(Integer tmp : result){
+                    public void CallBack(List<Integer> timeresult) {
+                        super.CallBack(timeresult);
+                        for(Integer tmp : timeresult){
                             Log.d("HOGE",tmp.toString());
                         }
+                        map.addCircle(new CircleOptions().center(result.get(0).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
+                        map.addCircle(new CircleOptions().center(result.get(1).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
                     }
                 });
             }
