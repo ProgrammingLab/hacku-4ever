@@ -23,11 +23,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.kurume_nct.himawari.dummy.DummyContent;
 
 import java.util.ArrayList;
 
-public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, RouteFragment.OnListFragmentInteractionListener {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
     private final int REQUEST_ROUTE = 100;
@@ -200,10 +199,5 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             default:
                 break;
         }
-    }
-
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-        Log.d("HOGE", item.toString());
     }
 }

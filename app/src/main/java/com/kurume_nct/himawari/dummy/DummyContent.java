@@ -1,9 +1,10 @@
 package com.kurume_nct.himawari.dummy;
 
+import com.kurume_nct.himawari.StoreData;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -16,57 +17,42 @@ public class DummyContent {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    public static final List<StoreData> DATA_ITEMS = new ArrayList<StoreData>();
+    public static final List<DummyTimeData> TIME_ITEMS = new ArrayList<DummyTimeData>();
 
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
-
-    private static final int COUNT = 25;
+    private static final int COUNT = 10;
 
     static {
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
+        for (int i = 0; i < COUNT; i++) {
+            List<String> types = new ArrayList<String>(Arrays.asList("book_store"));
+            StoreData data = new StoreData();
+            data.setStoreName("STORE NAME");
+            data.setTypes(types);
+            DATA_ITEMS.add(data);
+        }
+
+        for (int i = 0; i < COUNT - 1; i++) {
+            DummyTimeData data = new DummyTimeData(10, 500);
+            TIME_ITEMS.add(data);
         }
     }
 
-    private static void addItem(DummyItem item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
-    }
+    public static class DummyTimeData {
+        public int duration;
+        public int distance;
 
-    private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
-    }
-
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
-    }
-
-    /**
-     * A dummy item representing a piece of content.
-     */
-    public static class DummyItem {
-        public final String id;
-        public final String content;
-        public final String details;
-
-        public DummyItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
+        public DummyTimeData(int duration, int distance) {
+            this.duration = duration;
+            this.distance = distance;
         }
 
-        @Override
-        public String toString() {
-            return content;
+        public String getDuration() {
+            return String.format("%d分", duration);
+        }
+
+        public String getDistance() {
+            return String.format("%d m", distance);
         }
     }
 }

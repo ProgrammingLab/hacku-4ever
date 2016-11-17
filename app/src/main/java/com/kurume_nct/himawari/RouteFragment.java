@@ -10,18 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kurume_nct.himawari.dummy.DummyContent;
-import com.kurume_nct.himawari.dummy.DummyContent.DummyItem;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class RouteFragment extends Fragment {
     public static final String ROUTE_KEY = "route_";
-
-    private OnListFragmentInteractionListener mListener;
 
     public RouteFragment() {
     }
@@ -44,31 +35,8 @@ public class RouteFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RouteRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new RouteRecyclerViewAdapter(getContext(), DummyContent.DATA_ITEMS, DummyContent.TIME_ITEMS));
         }
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Fragment fragment = getTargetFragment();
-        if (fragment != null && fragment instanceof  OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) fragment;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(DummyItem item);
     }
 }
