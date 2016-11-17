@@ -30,11 +30,13 @@ public class LineDrawing {
         this.map = map;
         this.API_KEY = context.getString(R.string.google_maps_key);
     }
-    public void drawRoute(LatLng curr,LatLng dest,List<LatLng> waypoints) {
+    public void drawRoute(LatLng curr,LatLng dest,final List<StoreData> waypoints,GoogleMap map,DownloadWayTask.CallBackTask callback) {
         if (dest == null) {
             Log.e("fuga", "drawRoute");
             return;
         }
+
+        this.map = map;
 
         String output = "json";
 
@@ -42,54 +44,25 @@ public class LineDrawing {
         parameters += "origin=" + curr.latitude + "," + curr.longitude;
         parameters += "&destination=" + dest.latitude + "," + dest.longitude;
 
-        if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true";
-        for (LatLng waypoint : waypoints) {
-            parameters += "|" + waypoint.latitude + "," + waypoint.longitude;
+        if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true" + "%7C";
+        int cnt = 0;
+        for (StoreData waypoint : waypoints) {
+            if(cnt == 2){
+                break;
+            }
+            parameters += waypoint.getLatLng().latitude + "," + waypoint.getLatLng().longitude + "%7C";
+            ++cnt;
         }
-
+        parameters = parameters.substring(0,parameters.length()-3);
         parameters += "&mode=walking";
 
         //ここにAPIキーを追加してください
         parameters += "&key="+API_KEY;
 
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-
-        DownLoadTask task = new DownLoadTask();
+        Log.d("HOGE",url);
+        DownloadWayTask task = new DownloadWayTask(map,line);
+        task.setOnCallBack(callback);
         task.execute(url);
-    }
-
-    private class DownLoadTask extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-            String overview_polyline= "";
-            ObjectMapper mapper = new ObjectMapper();
-
-            JsonNode rootNode = null;
-            try {
-                Log.d("test",url[0]);
-                rootNode = mapper.readTree(new URL(url[0]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").asText();
-
-            return overview_polyline;
-        }
-        @Override
-        protected void onPostExecute(String overview_polyline){
-            super.onPostExecute(overview_polyline);
-
-            if(line != null) line.remove();
-            List<LatLng> routes = PolyUtil.decode(overview_polyline + "");
-
-            line = map.addPolyline(new PolylineOptions()
-                    .addAll(routes)
-                    .width(10)
-                    .color(Color.BLUE));
-
-            return;
-        }
     }
 }

@@ -21,6 +21,7 @@ public class StoreData {
         this.name = name;
         this.types = types;
         this.price = classifyStore();
+        this.stayedTime = this.classifyTime();
     }
 
     public StoreData(LatLng latLng, String name, int price, List<String> types){
@@ -28,6 +29,7 @@ public class StoreData {
         this.name = name;
         this.price = price;
         this.types = types;
+        this.stayedTime = this.classifyTime();
     }
 
     public StoreData(LatLng latLng, String name, int price, List<String> types, int stayedTime){
@@ -162,7 +164,7 @@ public class StoreData {
             }
             maxValue = Math.max(maxValue,s);
         }
-        return maxValue;
+        return maxValue*60;
     }
 
 }

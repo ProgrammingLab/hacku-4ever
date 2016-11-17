@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,13 +25,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
     private GoogleMap map;
+    private Polyline line;
     private Location currentPos;
     private Marker destMarker = null;
 
@@ -150,23 +157,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        if (destMarker != null) {
-            destMarker.setPosition(latLng);
-        } else {
-            destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
-        }
-//        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
-//        sc.getParsedData(new DownloadTask.CallBackTask(){
-//            @Override
-//            public void CallBack(List<StoreData> result) {
-//                super.CallBack(result);
-//                // ここからAsyncTask処理後の処理を記述します。
-//            }
-//        });
-
-        LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
-        LatLng dest = destMarker.getPosition();
-        lineDrawing.drawRoute(curr,dest,new ArrayList<LatLng>());
+        map.clear();
+        destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
     }
 
     @Override
@@ -192,10 +184,32 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                     int price = args.getInt(InputFormFragment.PRICE_KEY);
                     int hour = args.getInt(InputFormFragment.DURATION_HOUR);
                     int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
+                    run();
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    private void run(){
+        SearchingStores sc = new SearchingStores(this.getContext(),destMarker.getPosition());
+        sc.getParsedData(new DownloadTask.CallBackTask(){
+            @Override
+            public void CallBack(List<StoreData> result) {
+                super.CallBack(result);
+                LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
+                LatLng dest = destMarker.getPosition();
+                lineDrawing.drawRoute(curr,dest,result,map,new DownloadWayTask.CallBackTask(){
+                    @Override
+                    public void CallBack(List<Integer> result) {
+                        super.CallBack(result);
+                        for(Integer tmp : result){
+                            Log.d("HOGE",tmp.toString());
+                        }
+                    }
+                });
+            }
+        });
     }
 }
