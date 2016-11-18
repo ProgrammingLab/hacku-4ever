@@ -12,14 +12,18 @@ import android.view.View;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class TimePickerDialogFragment extends BaseDialogFragment {
 
     private TimePicker timePicker;
 
-    public static TimePickerDialogFragment newInstance(Fragment fragment, int requestCode) {
+    public static TimePickerDialogFragment newInstance(Fragment fragment, int requestCode, Date time) {
         TimePickerDialogFragment dialog = new TimePickerDialogFragment();
         dialog.setTargetFragment(fragment, requestCode);
+        Bundle args = new Bundle();
+        args.putSerializable("TIME", time);
+        dialog.setArguments(args);
         return dialog;
     }
 
@@ -58,18 +62,20 @@ public class TimePickerDialogFragment extends BaseDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
+        final Date time = (Date) getArguments().getSerializable("TIME");
+        int hour = time.getHours();
+        int minute = time.getMinutes();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(createPickerView(hour, minute));
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String val = String.format("%d:%d", getHour(timePicker), getMinute(timePicker));
+                time.setHours(getHour(timePicker));
+                time.setMinutes(getMinute(timePicker));
                 OnValueSetListener listener = getListener();
                 if (listener != null) {
-                    listener.onValueSet(getTargetRequestCode(), val);
+                    listener.onValueSet(getTargetRequestCode(), time);
                 }
             }
         });

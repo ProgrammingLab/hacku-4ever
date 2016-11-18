@@ -12,10 +12,9 @@ import android.widget.EditText;
 
 public class PriceDialogFragment extends BaseDialogFragment {
 
-    public static PriceDialogFragment newInstance(Fragment fragment, int requestCode, String label) {
+    public static PriceDialogFragment newInstance(Fragment fragment, int requestCode, int price) {
         PriceDialogFragment dialog = new PriceDialogFragment();
         Bundle args = new Bundle();
-        args.putString("TITLE", label);
         dialog.setArguments(args);
         dialog.setTargetFragment(fragment, requestCode);
         return dialog;
@@ -24,15 +23,16 @@ public class PriceDialogFragment extends BaseDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_dialog_input, null);
-        String title = getArguments().getString("TITLE");
+        View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_dialog_input, null);
+        final EditText text = (EditText) v.findViewById(R.id.editText);
+
+        String title = getString(R.string.price_label);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(v);
         builder.setTitle(title);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                EditText text = (EditText) v.findViewById(R.id.editText);
                 getListener().onValueSet(getTargetRequestCode(), text.getText().toString().trim());
             }
         });
