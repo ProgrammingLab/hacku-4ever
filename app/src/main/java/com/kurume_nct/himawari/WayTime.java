@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class WayTime implements Parcelable {
     private int time;
-    private double distance;
+    private int distance;
 
     public WayTime(){
 
@@ -19,14 +19,14 @@ public class WayTime implements Parcelable {
         this.time = time;
     }
 
-    public WayTime(int time, double distance){
+    public WayTime(int time, int distance){
         this.time = time;
         this.distance = distance;
     }
 
     protected WayTime(Parcel in) {
         time = in.readInt();
-        distance = in.readDouble();
+        distance = in.readInt();
     }
 
     public static final Creator<WayTime> CREATOR = new Creator<WayTime>() {
@@ -42,10 +42,10 @@ public class WayTime implements Parcelable {
     };
 
     public void setTime(int time){this.time = time;}
-    public void setDistance(double distance){this.distance = distance;}
+    public void setDistance(int distance){this.distance = distance;}
 
     public int getTime(){return this.time;}
-    public double getDistance(){return this.distance;}
+    public int getDistance(){return this.distance;}
 
     @Override
     public int describeContents() {
@@ -55,6 +55,6 @@ public class WayTime implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(time);
-        parcel.writeDouble(distance);
+        parcel.writeInt(distance);
     }
 }

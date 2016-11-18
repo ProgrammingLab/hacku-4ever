@@ -53,7 +53,7 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<ArrayList<
         JsonNode n = rootNode.get("routes").get(0).get("legs");
 
         for(JsonNode m : n){
-            list.add(new WayTime(m.get("duration").get("value").asInt()));
+            list.add(new WayTime(m.get("duration").get("value").asInt(), m.get("distance").get("value").asInt()));
         }
         return Pair.create(Pair.create(stores,list),overview_polyline);
     }
