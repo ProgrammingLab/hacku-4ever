@@ -1,12 +1,15 @@
 package com.kurume_nct.himawari;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoreData {
+public class StoreData implements Parcelable {
     private LatLng latLng;
     private String name;
     private int price;
@@ -40,6 +43,26 @@ public class StoreData {
         this.types = types;
         this.stayedTime = stayedTime;
     }
+
+    protected StoreData(Parcel in) {
+        latLng = in.readParcelable(LatLng.class.getClassLoader());
+        name = in.readString();
+        price = in.readInt();
+        stayedTime = in.readInt();
+        types = in.createStringArrayList();
+    }
+
+    public static final Creator<StoreData> CREATOR = new Creator<StoreData>() {
+        @Override
+        public StoreData createFromParcel(Parcel in) {
+            return new StoreData(in);
+        }
+
+        @Override
+        public StoreData[] newArray(int size) {
+            return new StoreData[size];
+        }
+    };
 
     /*getter*/
     public LatLng getLatLng(){return this.latLng;}
@@ -171,4 +194,17 @@ public class StoreData {
         return maxValue*60;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(latLng, i);
+        parcel.writeString(getStoreName());
+        parcel.writeInt(getPrice());
+        parcel.writeInt(getStayedTime());
+        parcel.writeStringList(getTypes());
+    }
 }

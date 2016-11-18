@@ -9,18 +9,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kurume_nct.himawari.dummy.DummyContent;
+import java.util.ArrayList;
 
 public class RouteFragment extends Fragment {
     public static final String ROUTE_KEY = "route_";
+    private static final String STORES_KEY = "stores_";
+    private static final String TIMES_KEY = "times_";
 
     public RouteFragment() {
     }
 
     @SuppressWarnings("unused")
-    public static RouteFragment newInstance(Fragment target, int requestCode) {
+    public static RouteFragment newInstance(Fragment target, int requestCode, ArrayList<StoreData> stores, ArrayList<WayTime> times) {
+        StoreData a = new StoreData();
+        a.setStoreName("現在地");
+        StoreData b = new StoreData();
+        b.setStoreName("目的地");
+
         RouteFragment fragment = new RouteFragment();
         Bundle args = new Bundle();
+        stores.add(0, a);
+        stores.add(b);
+        args.putParcelableArrayList(STORES_KEY, stores);
+        args.putParcelableArrayList(TIMES_KEY, times);
         fragment.setArguments(args);
         fragment.setTargetFragment(target, requestCode);
         return fragment;
@@ -29,13 +40,16 @@ public class RouteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_route_list, container, false);
+        Bundle args = getArguments();
+        ArrayList<StoreData> stores = args.getParcelableArrayList(STORES_KEY);
+        ArrayList<WayTime> times = args.getParcelableArrayList(TIMES_KEY);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RouteRecyclerViewAdapter(getContext(), DummyContent.DATA_ITEMS, DummyContent.TIME_ITEMS));
+            recyclerView.setAdapter(new RouteRecyclerViewAdapter(getContext(), stores, times));
         }
         return view;
     }

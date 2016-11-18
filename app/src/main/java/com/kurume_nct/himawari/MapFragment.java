@@ -28,8 +28,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnPolylineClickListener{
     private final int REQUEST_PERMISSION = 1000;
@@ -168,8 +168,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         if (marker.equals(destMarker)) {
             // markerがクリックされたときの処理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            //transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
-            transaction.replace(R.id.activity_main, RouteFragment.newInstance(this, REQUEST_ROUTE));
+            transaction.replace(R.id.activity_main, InputFormFragment.newInstance(this, REQUEST_INPUT, marker.getPosition()));
             transaction.addToBackStack(null);
             transaction.commit();
         }
@@ -227,5 +226,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         for(int i = 0;i < 2;i++)
             if(!storeResults.isEmpty())
                 Log.d("test","store datum = " + storeResults.get(i).getStoreName());
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_main, RouteFragment.newInstance(this, REQUEST_ROUTE, storeResults, timeResults));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
