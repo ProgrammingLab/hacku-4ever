@@ -81,17 +81,20 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public class StoreViewHolder extends RecyclerView.ViewHolder {
+        private TextView storeTime;
         private TextView storeName;
         private TextView storePrice;
 
         public StoreViewHolder(View view) {
             super(view);
 
+            this.storeTime = (TextView) view.findViewById(R.id.store_time);
             this.storeName = (TextView) view.findViewById(R.id.store_name);
             this.storePrice = (TextView) view.findViewById(R.id.store_price);
         }
 
         public void onBindItemViewHolder(StoreData data) {
+            storeTime.setText(String.valueOf(data.getStayedTime() / 60));
             storeName.setText(data.getStoreName());
             storePrice.setText(String.valueOf(data.getPrice()));
         }
@@ -109,7 +112,7 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         public void onBindItemViewHolder(WayTime data) {
-            routeTime.setText(String.valueOf(data.getTime()));
+            routeTime.setText(String.valueOf(data.getTime() / 60));
             routeDistance.setText(String.valueOf(data.getDistance()));
         }
     }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,17 +34,17 @@ public class RouteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_route_list, container, false);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.way_toolbar);
+        toolbar.setTitle(getString(R.string.route_title));
+
         Bundle args = getArguments();
         ArrayList<StoreData> stores = args.getParcelableArrayList(STORES_KEY);
         ArrayList<WayTime> times = args.getParcelableArrayList(TIMES_KEY);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RouteRecyclerViewAdapter(getContext(), stores, times));
-        }
+        Context context = view.getContext();
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.route_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(new RouteRecyclerViewAdapter(getContext(), stores, times));
         return view;
     }
 }

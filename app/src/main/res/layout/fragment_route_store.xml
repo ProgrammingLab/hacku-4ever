@@ -4,8 +4,14 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
+    <FrameLayout
+        android:layout_width="@dimen/route_margin"
+        android:layout_height="wrap_content">
+
+    </FrameLayout>
+
     <TextView
-        android:id="@+id/store_price"
+        android:id="@+id/store_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/text_margin"
@@ -28,6 +34,24 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textSize="16dp"
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/store_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_margin"
+        android:layout_marginBottom="@dimen/text_margin"
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginRight="2dp"
+        android:textSize="16dp"
+        android:textAppearance="?attr/textAppearanceListItem" />
+    <TextView
+        android:text="円"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_margin"
+        android:layout_marginBottom="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
 
 </LinearLayout>

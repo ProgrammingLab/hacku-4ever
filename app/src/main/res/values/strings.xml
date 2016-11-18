@@ -8,4 +8,5 @@
     <string name="duration_default">00:30</string>
     <string name="form_title">目的地</string>
     <string name="form_submit_button">探す</string>
+    <string name="route_title">経路</string>
 </resources>

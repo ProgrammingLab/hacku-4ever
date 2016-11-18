@@ -4,7 +4,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
+    <FrameLayout
+        android:layout_width="@dimen/route_margin"
+        android:layout_height="wrap_content">
 
+    </FrameLayout>
     <TextView
         android:id="@+id/route_time"
         android:layout_width="wrap_content"
