@@ -4,7 +4,7 @@
     <string name="price_label">値段</string>
     <string name="price_default">500</string>
 
-    <string name="duration_label">時間</string>
+    <string name="time_label">到着時刻</string>
     <string name="duration_default">00:30</string>
     <string name="form_title">目的地</string>
     <string name="form_submit_button">探す</string>

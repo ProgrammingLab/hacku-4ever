@@ -2,19 +2,17 @@ package com.kurume_nct.himawari;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.fitness.request.DebugInfoRequest;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,74 +20,88 @@ import java.util.List;
  */
 
 public class LineDrawing {
-    private GoogleMap map;
-    private Polyline line;
     private String API_KEY;
+    private Boolean isIn;
+    GoogleMap map;
+    Polyline line;
 
     public LineDrawing(Context context, GoogleMap map){
         this.map = map;
         this.API_KEY = context.getString(R.string.google_maps_key);
     }
-    public void drawRoute(LatLng curr,LatLng dest,List<LatLng> waypoints) {
+    public void drawRoute(LatLng curr,LatLng dest,final List<StoreData> waypoints,final int price,final int hour,final int minute,
+                          GoogleMap map,DownloadWayTask.CallBackTask callback) {
         if (dest == null) {
             Log.e("fuga", "drawRoute");
             return;
         }
 
-        String output = "json";
+        this.map = map;
+        int query = 10;
+        while(query != 0) {
+            query--;
+            String output = "json";
+            String parameters = "";
+            parameters += "origin=" + curr.latitude + "," + curr.longitude;
+            parameters += "&destination=" + dest.latitude + "," + dest.longitude;
 
-        String parameters = "";
-        parameters += "origin=" + curr.latitude + "," + curr.longitude;
-        parameters += "&destination=" + dest.latitude + "," + dest.longitude;
+            if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true" + "%7C";
+            int cnt = 0;
+            int stayedTime = 0;
+            int tryPrice = 0;
+            Collections.shuffle(waypoints);
+            boolean isEnd = false;
+            List<StoreData> stores = new ArrayList<StoreData>();
+            for (StoreData waypoint : waypoints) {
+                if (cnt == 2) {
+                    isEnd = true;
+                    break;
+                }
 
-        if (!waypoints.isEmpty()) parameters += "&waypoints=optimize:true";
-        for (LatLng waypoint : waypoints) {
-            parameters += "|" + waypoint.latitude + "," + waypoint.longitude;
-        }
+                if(query < 3 && cnt == 1){
+                    isEnd = true;
+                    break;
+                }
 
-        parameters += "&mode=walking";
-
-        //ここにAPIキーを追加してください
-        parameters += "&key="+API_KEY;
-
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-
-        DownLoadTask task = new DownLoadTask();
-        task.execute(url);
-    }
-
-    private class DownLoadTask extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-            String overview_polyline= "";
-            ObjectMapper mapper = new ObjectMapper();
-
-            JsonNode rootNode = null;
-            try {
-                Log.d("test",url[0]);
-                rootNode = mapper.readTree(new URL(url[0]));
-            } catch (IOException e) {
-                e.printStackTrace();
+                if(tryPrice+waypoint.getPrice() < price){
+                    tryPrice += waypoint.getPrice();
+                    stores.add(waypoint);
+                }
+                else{
+                    break;
+                }
+                parameters += waypoint.getLatLng().latitude + "," + waypoint.getLatLng().longitude + "%7C";
+                stayedTime += waypoint.getStayedTime();
+                ++cnt;
             }
+            if(!isEnd)continue;
 
-            overview_polyline = rootNode.get("routes").get(0).get("overview_polyline").get("points").asText();
+            parameters = parameters.substring(0, parameters.length() - 3);
+            parameters += "&mode=walking";
+            Calendar calendar = Calendar.getInstance();
+            long unixTime = calendar.getTimeInMillis();
+            int h = calendar.get(Calendar.HOUR_OF_DAY);
+            int m = calendar.get(Calendar.MINUTE);
+            int p = 0;
+            if(m > minute){
+                p = (hour - h -1)*3600 + (60 - (m - minute))*60;
+            }
+            else{
+                p = (hour - h)*3600 + (minute - m)*60;
+            }
+            if(p-stayedTime < 0){
+                continue;
+            }
+            parameters += "&arrival_time=" + String.valueOf(unixTime + 1000*(p - stayedTime));
 
-            return overview_polyline;
-        }
-        @Override
-        protected void onPostExecute(String overview_polyline){
-            super.onPostExecute(overview_polyline);
+            //ここにAPIキーを追加してください
+            parameters += "&key=" + API_KEY;
 
-            if(line != null) line.remove();
-            List<LatLng> routes = PolyUtil.decode(overview_polyline + "");
-
-            line = map.addPolyline(new PolylineOptions()
-                    .addAll(routes)
-                    .width(10)
-                    .color(Color.BLUE));
-
-            return;
+            String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+            DownloadWayTask task = new DownloadWayTask(map, line, stores);
+            task.setOnCallBack(callback);
+            task.execute(url);
+            break;
         }
     }
 }

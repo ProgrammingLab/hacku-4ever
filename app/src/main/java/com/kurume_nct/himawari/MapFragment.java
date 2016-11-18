@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,20 +21,25 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnPolylineClickListener{
     private final int REQUEST_PERMISSION = 1000;
     private final int REQUEST_INPUT = 10;
     private final int REQUEST_ROUTE = 100;
     private GoogleMap map;
+    private Polyline line;
     private Location currentPos;
     private Marker destMarker = null;
-
+    List<WayTime> timeResults;
+    List<StoreData> storeResults;
     LineDrawing lineDrawing;
 
     public MapFragment() {
@@ -54,6 +60,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         map.setOnMapLongClickListener(this);
         map.setOnMarkerClickListener(this);
+        map.setOnPolylineClickListener(this);
 
         lineDrawing = new LineDrawing(getContext(), map);
     }
@@ -151,23 +158,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        if (destMarker != null) {
-            destMarker.setPosition(latLng);
-        } else {
-            destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
-        }
-//        SearchingStores sc = new SearchingStores(this.getContext(),latLng);
-//        sc.getParsedData(new DownloadTask.CallBackTask(){
-//            @Override
-//            public void CallBack(List<StoreData> result) {
-//                super.CallBack(result);
-//                // ここからAsyncTask処理後の処理を記述します。
-//            }
-//        });
-
-        LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
-        LatLng dest = destMarker.getPosition();
-        lineDrawing.drawRoute(curr,dest,new ArrayList<LatLng>());
+        map.clear();
+        destMarker = map.addMarker(new MarkerOptions().position(latLng).draggable(true));
     }
 
     @Override
@@ -192,12 +184,47 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 int is_submit = args.getInt(InputFormFragment.IS_SUBMIT);
                 if (is_submit == 1) {
                     int price = args.getInt(InputFormFragment.PRICE_KEY);
-                    int hour = args.getInt(InputFormFragment.DURATION_HOUR);
-                    int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
+                    Date time = (Date) args.getSerializable(InputFormFragment.TIME_KEY);
+                    run(price,time.getHours(),time.getMinutes());
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    private void run(final int price,final int hour,final int minute){
+        SearchingStores sc = new SearchingStores(this.getContext(),destMarker.getPosition());
+        sc.getParsedData(new DownloadTask.CallBackTask(){
+            @Override
+            public void CallBack(final List<StoreData> subresult) {
+                super.CallBack(subresult);
+                LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
+                LatLng dest = destMarker.getPosition();
+
+                lineDrawing.drawRoute(curr,dest,subresult,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
+                    @Override
+                    public void CallBack(Pair<List<StoreData>,List<WayTime>> result) {
+                        super.CallBack(result);
+                        for(StoreData tmp : result.first){
+                            map.addCircle(new CircleOptions().center(tmp.getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
+                        }
+                        storeResults = result.first;
+                        timeResults = result.second;
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void onPolylineClick(Polyline polyline) {
+        //Polylineがクリックされた時の処理
+        for(WayTime wayTime : timeResults)
+            Log.d("test","wayTime = "+ wayTime.getDistance() + " " + wayTime.getTime());
+
+        for(int i = 0;i < 2;i++)
+            if(!storeResults.isEmpty())
+                Log.d("test","store datum = " + storeResults.get(i).getStoreName());
     }
 }
