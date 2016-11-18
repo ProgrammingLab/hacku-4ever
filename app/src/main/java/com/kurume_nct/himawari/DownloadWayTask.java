@@ -19,22 +19,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownloadWayTask  extends AsyncTask<String,Void,Pair<List<WayTime>,String>> {
+public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<List<StoreData>,List<WayTime>>,String>> {
     private CallBackTask callbacktask;
     private GoogleMap map;
     private Polyline line;
+    private List<StoreData> stores;
 
     public DownloadWayTask(){
 
     }
 
-    public DownloadWayTask(GoogleMap map,Polyline line){
+    public DownloadWayTask(GoogleMap map,Polyline line, List<StoreData> storeData){
         this.map = map;
         this.line = line;
+        this.stores = storeData;
     }
 
     @Override
-    protected Pair<List<WayTime>,String> doInBackground(String... url){
+    protected Pair<Pair<List<StoreData>,List<WayTime>>,String> doInBackground(String... url){
         String overview_polyline= "";
         ObjectMapper mapper = new ObjectMapper();
 
@@ -53,11 +55,11 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<List<WayTime>,S
         for(JsonNode m : n){
             list.add(new WayTime(m.get("duration").get("value").asInt()));
         }
-        return Pair.create(list,overview_polyline);
+        return Pair.create(Pair.create(stores,list),overview_polyline);
     }
 
     @Override
-    protected void onPostExecute(Pair<List<WayTime>,String> result){
+    protected void onPostExecute(Pair<Pair<List<StoreData>,List<WayTime>>,String> result){
         super.onPostExecute(result);
         List<LatLng> routes = PolyUtil.decode(result.second + "");
 
@@ -74,7 +76,7 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<List<WayTime>,S
     }
 
     public static class CallBackTask {
-        public void CallBack(List<WayTime> result) {
+        public void CallBack(Pair<List<StoreData>,List<WayTime>> result) {
         }
     }
 }

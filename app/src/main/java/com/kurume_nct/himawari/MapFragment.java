@@ -200,20 +200,20 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         SearchingStores sc = new SearchingStores(this.getContext(),destMarker.getPosition());
         sc.getParsedData(new DownloadTask.CallBackTask(){
             @Override
-            public void CallBack(final List<StoreData> result) {
-                super.CallBack(result);
+            public void CallBack(final List<StoreData> subresult) {
+                super.CallBack(subresult);
                 LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
                 LatLng dest = destMarker.getPosition();
 
-                lineDrawing.drawRoute(curr,dest,result,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
+                lineDrawing.drawRoute(curr,dest,subresult,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
                     @Override
-                    public void CallBack(List<WayTime> timeresult) {
-                        super.CallBack(timeresult);
-                        map.addCircle(new CircleOptions().center(result.get(0).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
-                        map.addCircle(new CircleOptions().center(result.get(1).getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
-
-                        storeResults = result;
-                        timeResults = timeresult;
+                    public void CallBack(Pair<List<StoreData>,List<WayTime>> result) {
+                        super.CallBack(result);
+                        for(StoreData tmp : result.first){
+                            map.addCircle(new CircleOptions().center(tmp.getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));
+                        }
+                        storeResults = result.first;
+                        timeResults = result.second;
                     }
                 });
             }
