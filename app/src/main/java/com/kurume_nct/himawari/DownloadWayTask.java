@@ -63,8 +63,9 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<List<WayTime>,S
 
         line = map.addPolyline(new PolylineOptions()
                 .addAll(routes)
-                .width(10)
+                .width(15)
                 .color(Color.BLUE));
+        line.setClickable(true);
         callbacktask.CallBack(result.first);
     }
 
