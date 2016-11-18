@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -50,13 +51,21 @@ public class LineDrawing {
             int tryPrice = 0;
             Collections.shuffle(waypoints);
             boolean isEnd = false;
+            List<StoreData> stores = new ArrayList<StoreData>();
             for (StoreData waypoint : waypoints) {
                 if (cnt == 2) {
                     isEnd = true;
                     break;
                 }
+
+                if(query < 3 && cnt == 1){
+                    isEnd = true;
+                    break;
+                }
+
                 if(tryPrice+waypoint.getPrice() < price){
                     tryPrice += waypoint.getPrice();
+                    stores.add(waypoint);
                 }
                 else{
                     break;
@@ -89,7 +98,7 @@ public class LineDrawing {
             parameters += "&key=" + API_KEY;
 
             String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-            DownloadWayTask task = new DownloadWayTask(map, line);
+            DownloadWayTask task = new DownloadWayTask(map, line, stores);
             task.setOnCallBack(callback);
             task.execute(url);
             break;
