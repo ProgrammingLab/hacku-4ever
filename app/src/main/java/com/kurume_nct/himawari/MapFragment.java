@@ -211,6 +211,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                         }
                         storeResults = result.first;
                         timeResults = result.second;
+
+                        StoreData a = new StoreData();
+                        a.setStoreName("現在地");
+                        StoreData b = new StoreData();
+                        b.setStoreName("目的地");
+                        storeResults.add(0, a);
+                        storeResults.add(b);
                     }
                 });
             }
@@ -219,14 +226,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onPolylineClick(Polyline polyline) {
-        //Polylineがクリックされた時の処理
-        for(WayTime wayTime : timeResults)
-            Log.d("test","wayTime = "+ wayTime.getDistance() + " " + wayTime.getTime());
-
-        for(int i = 0;i < 2;i++)
-            if(!storeResults.isEmpty())
-                Log.d("test","store datum = " + storeResults.get(i).getStoreName());
-
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_main, RouteFragment.newInstance(this, REQUEST_ROUTE, storeResults, timeResults));
         transaction.addToBackStack(null);

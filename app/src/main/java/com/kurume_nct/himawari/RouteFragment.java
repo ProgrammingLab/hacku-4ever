@@ -21,15 +21,8 @@ public class RouteFragment extends Fragment {
 
     @SuppressWarnings("unused")
     public static RouteFragment newInstance(Fragment target, int requestCode, ArrayList<StoreData> stores, ArrayList<WayTime> times) {
-        StoreData a = new StoreData();
-        a.setStoreName("現在地");
-        StoreData b = new StoreData();
-        b.setStoreName("目的地");
-
         RouteFragment fragment = new RouteFragment();
         Bundle args = new Bundle();
-        stores.add(0, a);
-        stores.add(b);
         args.putParcelableArrayList(STORES_KEY, stores);
         args.putParcelableArrayList(TIMES_KEY, times);
         fragment.setArguments(args);
