@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="@dimen/route_margin"
         android:layout_height="@dimen/route_margin"
-        android:src="@drawable/line"/>
+        android:src="@drawable/line_circle"/>
     <TextView
         android:id="@+id/store_time"
         android:layout_width="wrap_content"
