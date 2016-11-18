@@ -33,12 +33,18 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             case 1:
                 view = LayoutInflater.from(context).inflate(R.layout.fragment_route, parent, false);
                 return new DurationViewHolder(view);
+            case 2:
+                view = LayoutInflater.from(context).inflate(R.layout.fragment_route_point, parent, false);
+                return new PointViewHolder(view);
         }
         return null;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (position == 0 || position == getItemCount() - 1) {
+            return 2;
+        }
         return position % 2;
     }
 
@@ -51,12 +57,29 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             case 1:
                 ((DurationViewHolder) holder).onBindItemViewHolder(durations.get(position / 2));
                 break;
+            case 2:
+                ((PointViewHolder) holder).onBindItemViewHolder(stores.get(position / 2));
+                break;
         }
     }
 
     @Override
     public int getItemCount() {
         return stores.size() + durations.size();
+    }
+
+    public class PointViewHolder extends RecyclerView.ViewHolder {
+        private TextView pointName;
+
+        public PointViewHolder(View view) {
+            super(view);
+
+            this.pointName = (TextView) view.findViewById(R.id.route_name);
+        }
+
+        public void onBindItemViewHolder(StoreData data) {
+            pointName.setText(data.getStoreName());
+        }
     }
 
     public class StoreViewHolder extends RecyclerView.ViewHolder {

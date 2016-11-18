@@ -24,13 +24,19 @@ public class DummyContent {
 
     static {
         // Add some sample items.
-        for (int i = 0; i < COUNT; i++) {
+        StoreData a = new StoreData();
+        a.setStoreName("現在地");
+        DATA_ITEMS.add(a);
+        for (int i = 1; i < COUNT - 1; i++) {
             List<String> types = new ArrayList<String>(Arrays.asList("book_store"));
             StoreData data = new StoreData();
             data.setStoreName("STORE NAME");
             data.setTypes(types);
             DATA_ITEMS.add(data);
         }
+        StoreData b = new StoreData();
+        b.setStoreName("目的地");
+        DATA_ITEMS.add(b);
 
         for (int i = 0; i < COUNT - 1; i++) {
             DummyTimeData data = new DummyTimeData(10, 500);

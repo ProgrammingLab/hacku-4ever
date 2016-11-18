@@ -3,6 +3,7 @@ package com.kurume_nct.himawari;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StoreData {
@@ -13,7 +14,7 @@ public class StoreData {
     private List<String> types;
 
     public StoreData(){
-
+        types = new ArrayList<String>();
     }
 
     public StoreData(LatLng latLng, String name, List<String> types){
@@ -101,6 +102,9 @@ public class StoreData {
                     break;
                 case "zoo":
                     s = 1000;
+                    break;
+                default:
+                    s = 0;
                     break;
             }
             maxValue = Math.max(maxValue,s);
