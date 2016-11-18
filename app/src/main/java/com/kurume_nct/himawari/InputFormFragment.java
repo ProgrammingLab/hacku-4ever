@@ -79,6 +79,14 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         }
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -121,8 +129,8 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         listView = (ListView) v.findViewById(R.id.list);
         listView.setOnItemClickListener(this);
         items = new ArrayList<InputFormItem>();
-        items.add(new InputFormItem(getString(R.string.price_label), price, PriceDialogFragment.newInstance(this, 0)));
-        items.add(new InputFormItem(getString(R.string.time_label), time, TimePickerDialogFragment.newInstance(this, 1)));
+        items.add(new InputFormItem(getString(R.string.price_label), price, PriceDialogFragment.newInstance(this, 0, getPrice())));
+        items.add(new InputFormItem(getString(R.string.time_label), time, TimePickerDialogFragment.newInstance(this, 1, getTime())));
         listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
         return v;
     }
@@ -146,14 +154,15 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     public void onValueSet(int requstCode, Object val) {
         if (requstCode == 0) {
             String tmp = (String) val;
-            items.get(0).setValue(val);
             try {
                 price = Integer.parseInt(tmp);
             } catch (NumberFormatException e) {
                 price = 0;
             }
+            items.get(0).setValue(val);
         }
         if (requstCode == 1) {
+            time = (Date) val;
             items.get(1).setValue(val);
         }
         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
