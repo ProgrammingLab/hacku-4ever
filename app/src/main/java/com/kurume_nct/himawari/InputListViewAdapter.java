@@ -34,7 +34,7 @@ public class InputListViewAdapter extends ArrayAdapter<InputFormFragment.InputFo
         InputFormFragment.InputFormItem item = items.get(position);
 
         label.setText(item.getLabel());
-        val.setText(item.getValue());
+        val.setText(item.toString());
 
         return convertView;
     }

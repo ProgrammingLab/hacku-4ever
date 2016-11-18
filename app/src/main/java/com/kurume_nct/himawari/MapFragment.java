@@ -15,10 +15,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.Toast;
 
-import com.google.android.gms.games.social.Social;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,10 +26,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnPolylineClickListener{
@@ -186,9 +182,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 int is_submit = args.getInt(InputFormFragment.IS_SUBMIT);
                 if (is_submit == 1) {
                     int price = args.getInt(InputFormFragment.PRICE_KEY);
-                    int hour = args.getInt(InputFormFragment.DURATION_HOUR);
-                    int minute = args.getInt(InputFormFragment.DURATION_MINUTE);
-                    run(price,hour,minute);
+                    Date time = (Date) args.getSerializable(InputFormFragment.TIME_KEY);
+                    run(price,time.getHours(),time.getMinutes());
                 }
                 break;
             default:

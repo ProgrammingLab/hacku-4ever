@@ -17,19 +17,20 @@ import android.widget.ListView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class InputFormFragment extends Fragment implements ListView.OnItemClickListener, BaseDialogFragment.OnValueSetListener {
     public static  final String IS_SUBMIT = "submit_";
     public static final String PRICE_KEY = "price_";
-    public static final String DURATION_HOUR = "duration_hour";
-    public static final String DURATION_MINUTE = "duration_minute";
+    public static final String TIME_KEY = "time_";
     public static final String POS_KEY = "marker_position";
 
     private int price;
-    private int hour;
-    private int minute;
+    private Date time;
     private LatLng markerPos;
 
     private ArrayList<InputFormItem> items;
@@ -43,11 +44,11 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     public static InputFormFragment newInstance(Fragment fragment, int requestCode, LatLng markerPos) {
         InputFormFragment self = new InputFormFragment();
         self.setTargetFragment(fragment, requestCode);
+        Date time = new Date();
 
         Bundle args = new Bundle();
         args.putInt(PRICE_KEY, 500);
-        args.putInt(DURATION_HOUR, 0);
-        args.putInt(DURATION_MINUTE, 30);
+        args.putSerializable(TIME_KEY, time);
         args.putParcelable(POS_KEY, markerPos);
         self.setArguments(args);
         return self;
@@ -69,11 +70,8 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
             if (savedInstanceState.containsKey(PRICE_KEY)) {
                 price = savedInstanceState.getInt(PRICE_KEY);
             }
-            if (savedInstanceState.containsKey(DURATION_HOUR)) {
-                hour = savedInstanceState.getInt(DURATION_HOUR);
-            }
-            if (savedInstanceState.containsKey(DURATION_MINUTE)) {
-                minute = savedInstanceState.getInt(DURATION_MINUTE);
+            if (savedInstanceState.containsKey(TIME_KEY)) {
+                time = (Date) savedInstanceState.getSerializable(TIME_KEY);
             }
             if (savedInstanceState.containsKey(POS_KEY)) {
                 markerPos = savedInstanceState.getParcelable(POS_KEY);
@@ -85,8 +83,7 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(PRICE_KEY, price);
-        outState.putInt(DURATION_HOUR, hour);
-        outState.putInt(DURATION_MINUTE, minute);
+        outState.putSerializable(TIME_KEY, time);
         outState.putParcelable(POS_KEY, markerPos);
     }
 
@@ -114,9 +111,8 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
             public boolean onMenuItemClick(MenuItem item) {
                 Intent result = new Intent();
                 result.putExtra(IS_SUBMIT, 1);
+                result.putExtra(TIME_KEY, time);
                 result.putExtra(PRICE_KEY, price);
-                result.putExtra(DURATION_HOUR, hour);
-                result.putExtra(DURATION_MINUTE, minute);
                 returnValue(result);
                 return true;
             }
@@ -125,8 +121,8 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
         listView = (ListView) v.findViewById(R.id.list);
         listView.setOnItemClickListener(this);
         items = new ArrayList<InputFormItem>();
-        items.add(new InputFormItem(getString(R.string.price_label), Integer.toString(price), PriceDialogFragment.newInstance(this, 0, getString(R.string.price_label))));
-        items.add(new InputFormItem(getString(R.string.duration_label), Integer.toString(hour) + ":" + Integer.toString(minute), TimePickerDialogFragment.newInstance(this, 1)));
+        items.add(new InputFormItem(getString(R.string.price_label), price, PriceDialogFragment.newInstance(this, 0)));
+        items.add(new InputFormItem(getString(R.string.time_label), time, TimePickerDialogFragment.newInstance(this, 1)));
         listView.setAdapter(new InputListViewAdapter(getContext(), R.layout.fragment_input_item, items));
         return v;
     }
@@ -147,15 +143,17 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
     }
 
     @Override
-    public void onValueSet(int requstCode, String val) {
+    public void onValueSet(int requstCode, Object val) {
         if (requstCode == 0) {
+            String tmp = (String) val;
             items.get(0).setValue(val);
-            price = Integer.parseInt(val);
+            try {
+                price = Integer.parseInt(tmp);
+            } catch (NumberFormatException e) {
+                price = 0;
+            }
         }
         if (requstCode == 1) {
-            String[] tmp = val.split(":");
-            hour = Integer.parseInt(tmp[0]);
-            minute = Integer.parseInt(tmp[1]);
             items.get(1).setValue(val);
         }
         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
@@ -163,11 +161,11 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
 
     public class InputFormItem {
         private String label;
-        private String val;
+        private Object val;
 
         private DialogFragment dialog;
 
-        public InputFormItem(String label, String val, DialogFragment dialogFragment) {
+        public InputFormItem(String label, Object val, DialogFragment dialogFragment) {
             this.label = label;
             this.val = val;
             this.dialog = dialogFragment;
@@ -177,12 +175,21 @@ public class InputFormFragment extends Fragment implements ListView.OnItemClickL
             return this.label;
         }
 
-        public String getValue() {
+        public Object getValue() {
             return this.val;
         }
 
-        public void setValue(String val) {
+        public void setValue(Object val) {
             this.val = val;
+        }
+
+        public String toString() {
+            if (val instanceof Date) {
+                Date time = (Date) val;
+                DateFormat df = new SimpleDateFormat("HH:mm");
+                return df.format(time);
+            }
+            return val.toString();
         }
 
         public DialogFragment getDialog() {

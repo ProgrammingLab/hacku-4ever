@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 
 abstract public class BaseDialogFragment extends DialogFragment {
     public interface OnValueSetListener {
-        void onValueSet(int requestCode, String val);
+        void onValueSet(int requestCode, Object val);
     }
 
     public OnValueSetListener getListener() {
