@@ -18,8 +18,8 @@ public class DummyContent {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<StoreData> DATA_ITEMS = new ArrayList<StoreData>();
-    public static final List<WayTime> TIME_ITEMS = new ArrayList<WayTime>();
+    public static final ArrayList<StoreData> DATA_ITEMS = new ArrayList<StoreData>();
+    public static final ArrayList<WayTime> TIME_ITEMS = new ArrayList<WayTime>();
 
     private static final int COUNT = 10;
 

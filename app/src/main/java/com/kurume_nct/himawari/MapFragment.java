@@ -39,8 +39,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private Polyline line;
     private Location currentPos;
     private Marker destMarker = null;
-    List<WayTime> timeResults;
-    List<StoreData> storeResults;
+    ArrayList<WayTime> timeResults;
+    ArrayList<StoreData> storeResults;
     LineDrawing lineDrawing;
 
     public MapFragment() {
@@ -198,14 +198,14 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         SearchingStores sc = new SearchingStores(this.getContext(),destMarker.getPosition());
         sc.getParsedData(new DownloadTask.CallBackTask(){
             @Override
-            public void CallBack(final List<StoreData> subresult) {
+            public void CallBack(final ArrayList<StoreData> subresult) {
                 super.CallBack(subresult);
                 LatLng curr = new LatLng(currentPos.getLatitude(),currentPos.getLongitude());
                 LatLng dest = destMarker.getPosition();
 
                 lineDrawing.drawRoute(curr,dest,subresult,price,hour,minute,map,new DownloadWayTask.CallBackTask(){
                     @Override
-                    public void CallBack(Pair<List<StoreData>,List<WayTime>> result) {
+                    public void CallBack(Pair<ArrayList<StoreData>,ArrayList<WayTime>> result) {
                         super.CallBack(result);
                         for(StoreData tmp : result.first){
                             map.addCircle(new CircleOptions().center(tmp.getLatLng()).radius(15).fillColor(Color.RED).strokeColor(Color.RED));

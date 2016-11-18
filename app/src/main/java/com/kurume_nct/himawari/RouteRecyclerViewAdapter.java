@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private final List<StoreData> stores;
-    private final List<WayTime> durations;
+    private final ArrayList<StoreData> stores;
+    private final ArrayList<WayTime> durations;
 
-    public RouteRecyclerViewAdapter(Context context, List<StoreData> stores, List<WayTime> durations) {
+    public RouteRecyclerViewAdapter(Context context, ArrayList<StoreData> stores, ArrayList<WayTime> durations) {
         this.context = context;
         this.stores = stores;
         this.durations = durations;

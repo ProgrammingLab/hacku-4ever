@@ -1,19 +1,15 @@
 package com.kurume_nct.himawari;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 
-import com.google.android.gms.fitness.request.DebugInfoRequest;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by shouhei on 2016/11/16.
@@ -29,7 +25,7 @@ public class LineDrawing {
         this.map = map;
         this.API_KEY = context.getString(R.string.google_maps_key);
     }
-    public void drawRoute(LatLng curr,LatLng dest,final List<StoreData> waypoints,final int price,final int hour,final int minute,
+    public void drawRoute(LatLng curr,LatLng dest,final ArrayList<StoreData> waypoints,final int price,final int hour,final int minute,
                           GoogleMap map,DownloadWayTask.CallBackTask callback) {
         if (dest == null) {
             Log.e("fuga", "drawRoute");
@@ -51,7 +47,7 @@ public class LineDrawing {
             int tryPrice = 0;
             Collections.shuffle(waypoints);
             boolean isEnd = false;
-            List<StoreData> stores = new ArrayList<StoreData>();
+            ArrayList<StoreData> stores = new ArrayList<StoreData>();
             for (StoreData waypoint : waypoints) {
                 if (cnt == 2) {
                     isEnd = true;

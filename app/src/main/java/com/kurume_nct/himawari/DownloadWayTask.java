@@ -19,29 +19,29 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<List<StoreData>,List<WayTime>>,String>> {
+public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<ArrayList<StoreData>,ArrayList<WayTime>>,String>> {
     private CallBackTask callbacktask;
     private GoogleMap map;
     private Polyline line;
-    private List<StoreData> stores;
+    private ArrayList<StoreData> stores;
 
     public DownloadWayTask(){
 
     }
 
-    public DownloadWayTask(GoogleMap map,Polyline line, List<StoreData> storeData){
+    public DownloadWayTask(GoogleMap map,Polyline line, ArrayList<StoreData> storeData){
         this.map = map;
         this.line = line;
         this.stores = storeData;
     }
 
     @Override
-    protected Pair<Pair<List<StoreData>,List<WayTime>>,String> doInBackground(String... url){
+    protected Pair<Pair<ArrayList<StoreData>,ArrayList<WayTime>>,String> doInBackground(String... url){
         String overview_polyline= "";
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode rootNode = null;
-        List <WayTime> list = new ArrayList<WayTime>();
+        ArrayList <WayTime> list = new ArrayList<WayTime>();
         try {
             Log.d("test",url[0]);
             rootNode = mapper.readTree(new URL(url[0]));
@@ -59,7 +59,7 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<List<Store
     }
 
     @Override
-    protected void onPostExecute(Pair<Pair<List<StoreData>,List<WayTime>>,String> result){
+    protected void onPostExecute(Pair<Pair<ArrayList<StoreData>,ArrayList<WayTime>>,String> result){
         super.onPostExecute(result);
         List<LatLng> routes = PolyUtil.decode(result.second + "");
 
@@ -76,7 +76,7 @@ public class DownloadWayTask  extends AsyncTask<String,Void,Pair<Pair<List<Store
     }
 
     public static class CallBackTask {
-        public void CallBack(Pair<List<StoreData>,List<WayTime>> result) {
+        public void CallBack(Pair<ArrayList<StoreData>,ArrayList<WayTime>> result) {
         }
     }
 }

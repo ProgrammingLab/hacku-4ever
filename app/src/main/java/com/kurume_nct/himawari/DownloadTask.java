@@ -12,11 +12,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownloadTask extends AsyncTask<URL,Void,List<StoreData>> {
+public class DownloadTask extends AsyncTask<URL,Void,ArrayList<StoreData>> {
     private CallBackTask callbacktask;
 
     @Override
-    protected List<StoreData> doInBackground(URL... url) {
+    protected ArrayList<StoreData> doInBackground(URL... url) {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = null;
         try {
@@ -25,7 +25,7 @@ public class DownloadTask extends AsyncTask<URL,Void,List<StoreData>> {
             Log.e("asynctask",e.getMessage());
         }
 
-        List<StoreData> list = new ArrayList<StoreData>();
+        ArrayList<StoreData> list = new ArrayList<StoreData>();
         for(JsonNode n : rootNode.get("results")){
             LatLng latLng = new LatLng(n.get("geometry").get("location").get("lat").asDouble(),
                     n.get("geometry").get("location").get("lng").asDouble());
@@ -39,7 +39,7 @@ public class DownloadTask extends AsyncTask<URL,Void,List<StoreData>> {
         return list;
     }
     @Override
-    protected void onPostExecute(List<StoreData> result) {
+    protected void onPostExecute(ArrayList<StoreData> result) {
         super.onPostExecute(result);
         callbacktask.CallBack(result);
     }
@@ -49,7 +49,7 @@ public class DownloadTask extends AsyncTask<URL,Void,List<StoreData>> {
     }
 
     public static class CallBackTask {
-        public void CallBack(List<StoreData> result) {
+        public void CallBack(ArrayList<StoreData> result) {
         }
     }
 }
