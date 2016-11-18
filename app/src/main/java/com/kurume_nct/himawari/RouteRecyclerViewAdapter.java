@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -56,7 +57,11 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 ((DurationViewHolder) holder).onBindItemViewHolder(durations.get(position / 2));
                 break;
             case 2:
-                ((PointViewHolder) holder).onBindItemViewHolder(stores.get(position / 2));
+                PointViewHolder tmp = (PointViewHolder) holder;
+                tmp.onBindItemViewHolder(stores.get(position / 2));
+                if (position == 0) {
+                    tmp.circle.setBackgroundResource(R.drawable.my_point);
+                }
                 break;
         }
     }
@@ -67,11 +72,13 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public class PointViewHolder extends RecyclerView.ViewHolder {
+        public Button circle;
         private TextView pointName;
 
         public PointViewHolder(View view) {
             super(view);
 
+            this.circle = (Button) view.findViewById(R.id.circle);
             this.pointName = (TextView) view.findViewById(R.id.route_name);
         }
 
