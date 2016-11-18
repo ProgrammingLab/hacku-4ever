@@ -7,17 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kurume_nct.himawari.dummy.DummyContent.DummyTimeData;
-
 import java.util.List;
 
 public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private final List<StoreData> stores;
-    private final List<DummyTimeData> durations;
+    private final List<WayTime> durations;
 
-    public RouteRecyclerViewAdapter(Context context, List<StoreData> stores, List<DummyTimeData> durations) {
+    public RouteRecyclerViewAdapter(Context context, List<StoreData> stores, List<WayTime> durations) {
         this.context = context;
         this.stores = stores;
         this.durations = durations;
@@ -110,9 +108,9 @@ public class RouteRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             this.routeDistance = (TextView) view.findViewById(R.id.route_distance);
         }
 
-        public void onBindItemViewHolder(DummyTimeData data) {
-            routeTime.setText(data.getDuration());
-            routeDistance.setText(data.getDistance());
+        public void onBindItemViewHolder(WayTime data) {
+            routeTime.setText(String.valueOf(data.getTime()));
+            routeDistance.setText(String.valueOf(data.getDistance()));
         }
     }
 }
